@@ -14,14 +14,44 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
           distribution: 'temurin'
+          java-version: '17'
 
-      - name: Build and test with Maven
-        run: mvn clean verify --file ./simple-api/pom.xml
+      - name: Build and test backend
+        run: |
+          cd simple-api
+          mvn clean verify
 
-      - name: SonarCloud analysis
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=<TON_PROJECT_KEY> -Dsonar.organization=<TON_ORGA_KEY> -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }} --file ./simple-api/pom.xml
+  build-and-push-docker-image:
+    needs: test-backend
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./simple-api
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+          push: true
+
+      - name: Build and push database image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./my-database
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-db:latest
+          push: true
+
+      - name: Build and push httpd image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./http-server
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+          push: true
