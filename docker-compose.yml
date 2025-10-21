@@ -1,0 +1,52 @@
+services:
+  backend:
+    build: .
+    networks:
+      - app-network
+    depends_on:
+      - database
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/simpleapi
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: Changeme
+
+  database:
+    image: postgres:17.2-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: simpleapi
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: Changeme
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  httpd:
+    image: httpd:2.4-alpine
+    expose:
+      - "80:80"    # expose sans map de port vers l'hôte
+    volumes:
+      - ./http-server/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  nginx-proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"  # expose sur port 80 de la machine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - httpd
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  pgdata:

@@ -1,0 +1,17 @@
+# IntelliJ IDEA
+.idea/
+
+# Maven output
+target/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Eclipse (au cas où quelqu’un utilise un autre IDE)
+*.classpath
+*.project
+*.settings/
