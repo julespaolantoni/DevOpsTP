@@ -3,7 +3,7 @@ name: CD - Publish Docker Images
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   test-backend:
