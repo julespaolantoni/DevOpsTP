@@ -81,16 +81,16 @@ class StudentControllerTestIT {
     @Sql({"/InsertData.sql"})
     void testPostStudentWithoutDepartment() throws Exception {
         String body = """
-                {
-                    "lastname": "Didier",
-                    }
-                }
-                """;
+            {
+                "lastname": "Didier"
+            }
+            """;
         mockMvc.perform(post("/students")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
 
     @Test
     @Sql({"/InsertData.sql"})
