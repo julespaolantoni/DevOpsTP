@@ -6,6 +6,23 @@ on:
       - main
 
 jobs:
+  test-backend:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run Maven tests
+        run: |
+          cd simple-api
+          mvn clean verify
+
   build-and-push-docker-image:
     needs: test-backend
     runs-on: ubuntu-24.04
