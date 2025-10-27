@@ -6,7 +6,7 @@
 - name: Run API
   docker_container:
     name: backend-api
-    image: your-dockerhub-username/tp-devops-simple-api:latest
+    image: "{{ lookup('env', 'DOCKERHUB_USERNAME') }}/tp-devops-simple-api:latest"
     state: started
     restart_policy: always
     env:
