@@ -8,4 +8,4 @@
       SPRING_PROFILES_ACTIVE: prod
       DATABASE_URL: "jdbc:mysql://db:3306/mydb"
     networks:
-      - my_network
+      - name: my_network
