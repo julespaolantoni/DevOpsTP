@@ -56,13 +56,17 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
           push: true
 
-  deploy:
+  deploy: # <-- THIS GOES HERE
     name: Deploy to Server
     needs: build-and-push-docker-images
     runs-on: ubuntu-24.04
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Setup Ansible
         run: sudo apt update && sudo apt install -y ansible sshpass
       - name: Set up SSH key
@@ -73,6 +77,7 @@ jobs:
 
       - name: Add server to known_hosts
         run: ssh-keyscan -H jules.paolantoni.takima.cloud >> ~/.ssh/known_hosts
+
 
       - name: Run Ansible playbook
         run: ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml --private-key ~/.ssh/id_rsa -u admin --become
