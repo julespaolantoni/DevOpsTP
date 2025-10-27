@@ -1,0 +1,13 @@
+- name: Run MySQL
+  docker_container:
+    name: db
+    image: mysql:8.0
+    state: started
+    restart_policy: always
+    env:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    networks:
+      - my_network

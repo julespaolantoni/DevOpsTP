@@ -1,0 +1,11 @@
+- name: Run API
+  docker_container:
+    name: backend-api
+    image: your-dockerhub-username/tp-devops-simple-api:latest
+    state: started
+    restart_policy: always
+    env:
+      SPRING_PROFILES_ACTIVE: prod
+      DATABASE_URL: "jdbc:mysql://db:3306/mydb"
+    networks:
+      - my_network

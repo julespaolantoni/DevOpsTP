@@ -1,0 +1,10 @@
+- name: Run HTTPD
+  docker_container:
+    name: httpd
+    image: your-dockerhub-username/tp-devops-httpd:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "80:80"
+    networks:
+      - my_network

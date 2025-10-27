@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - develop
   pull_request:
 
 jobs:
@@ -29,7 +28,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-
 
   build-and-push-docker-images:
     name: Build & Push Docker Images
@@ -57,3 +55,21 @@ jobs:
           context: ./http-server
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
           push: true
+
+  deploy:
+    name: Deploy to Server
+    needs: build-and-push-docker-images
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Ansible
+        run: sudo apt update && sudo apt install -y ansible sshpass
+
+      - name: Copy SSH key
+        run: mkdir -p ~/.ssh && echo "${{ secrets.SERVER_PRIVATE_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+
+      - name: Run Ansible Playbook
+        run: ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml --private-key ~/.ssh/id_rsa -u admin --become
