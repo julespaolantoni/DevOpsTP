@@ -10,4 +10,4 @@
       MYSQL_USER: myuser
       MYSQL_PASSWORD: mypassword
     networks:
-      - my_network
+      - name: my_network
