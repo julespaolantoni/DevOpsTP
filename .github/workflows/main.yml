@@ -60,17 +60,13 @@ jobs:
     name: Deploy to Server
     needs: build-and-push-docker-images
     runs-on: ubuntu-24.04
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Setup Ansible
         run: sudo apt update && sudo apt install -y ansible sshpass
-
-      - name: Copy SSH key and add server to known_hosts
+      - name: Add SSH key and known_hosts
         run: mkdir -p ~/.ssh && echo "${{ secrets.SERVER_PRIVATE_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa && ssh-keyscan -H jules.paolantoni.takima.cloud >> ~/.ssh/known_hosts
-
       - name: Run Ansible Playbook
         run: ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml --private-key ~/.ssh/id_rsa -u admin --become
 
