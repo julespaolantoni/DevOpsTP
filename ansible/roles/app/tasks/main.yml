@@ -9,3 +9,6 @@
       DATABASE_URL: "jdbc:mysql://db:3306/mydb"
     networks:
       - name: my_network
+    login:
+      username: "{{ lookup('env', 'DOCKERHUB_USERNAME') }}"
+      password: "{{ lookup('env', 'DOCKERHUB_TOKEN') }}"
